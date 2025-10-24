@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Links Overseer</title>
+  <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+  <div class="container">
+    <h1>
+      Links Overseer |
+      <a href="https://github.com/okpulse" target="_blank" rel="noopener noreferrer">
+      by Pulse
+      </a>
+    </h1>
+    <p class="subtitle">Проверка ссылок: введите стартовый адрес и глубину, получите статусы.</p>
+
+    <div class="card">
+      <div class="row">
+        <label>Стартовый URL</label>
+        <input id="startUrl" placeholder="https://example.com" />
+      </div>
+      <div class="row">
+        <label>Глубина обхода</label>
+        <input id="depth" type="number" min="0" max="5" value="2" />
+      
+<small class="hint-line">Значения: 2 по умолчанию; 0 — собирать только с указанной страницы; максимум — 5</small></div>
+      <div class="row small">
+        <label><input type="checkbox" id="respectRobots" checked/> Учитывать robots.txt <span class="hint-badge" title="Соблюдаем запреты и задержки из robots.txt (disallow, crawl-delay); сканирование идёт аккуратнее.">?</span></label>
+      </div>
+      <div class="actions"><button id="startBtn">Старт</button><button id="stopBtn" class="secondary">Стоп</button></div>
+      <div id="progress" class="progress hidden">
+        <div class="bar"><span id="barFill" style="width:0%"></span></div>
+        <div class="stats">
+          <span id="statVisited">Visited: 0</span>
+          <span id="statQueued">Queued: 0</span>
+          <span id="statDiscovered">Discovered: 0</span>
+          <span id="statErrors">Errors: 0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="filters card">
+  <div class="chip-row" id="filterChips">
+    <button class="chip active" data-mode="all">Все</button>
+    <button class="chip" data-mode="internal">Внутренние</button>
+    <button class="chip" data-mode="external">Внешние</button>
+    <button class="chip" data-mode="2">2xx</button>
+    <button class="chip" data-mode="3">3xx</button>
+    <button class="chip" data-mode="4">4xx</button>
+    <button class="chip" data-mode="5">5xx</button>
+    <button class="chip" data-mode="e">Ошибки</button>
+  </div>
+  <div id="summary" class="summary"></div>
+</div>
+
+    <div class="card">
+      <table id="table">
+        <thead>
+          <tr>
+            <th>URL</th>
+            <th>Site page</th>
+            <th>Status</th>
+            <th>Time, ms</th>
+            <th>In?</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

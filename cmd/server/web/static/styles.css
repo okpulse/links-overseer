@@ -1,0 +1,83 @@
+*{box-sizing:border-box} 
+:root{
+  --bg:#0b0d10;--card:#12151a;--border:#232a33;--muted:#9fb1c3;--text:#e9edf1;
+  --accent:#1e6cff;--good:#22c55e;--warn:#eab308;--bad:#dc2626;
+}
+body{
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;
+  background:var(--bg); color:var(--text); margin:0; padding:32px;
+}
+.container{max-width:1100px;margin:0 auto}
+h1{margin:0 0 8px 0;font-weight:800;letter-spacing:.2px}
+.subtitle{margin:0 0 20px 0;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.row{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.row label{min-width:160px;color:var(--muted)}
+.row input{flex:1;padding:12px 12px;border-radius:10px;border:1px solid #2b3440;background:#0e1116;color:#fff;outline:none}
+.row input:focus{border-color:#395574}
+.row.small label{min-width:auto}
+.actions{display:flex;gap:12px}
+button{background:var(--accent);border:none;color:white;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700;letter-spacing:.2px}
+button[disabled]{opacity:.6;cursor:not-allowed}
+.progress{margin-top:12px}
+.progress.hidden{display:none}
+.bar{height:8px;background:#1a2028;border-radius:6px;overflow:hidden;margin-bottom:8px}
+.bar span{display:block;height:100%;background:var(--good)}
+.stats{display:flex;gap:16px;color:var(--muted);font-size:14px;flex-wrap:wrap}
+.filters .summary{margin-top:6px;color:var(--muted)}
+.filters .filter-row{display:flex;gap:16px;align-items:center;margin:8px 0}
+table{width:100%;border-collapse:collapse}
+th,td{border-bottom:1px solid #1f2630;padding:10px 12px;text-align:left;vertical-align:top}
+tbody tr.bad{background:rgba(220,38,38,.08)}
+tbody tr.warn{background:rgba(234,179,8,.08)}
+tbody tr.good{background:rgba(34,197,94,.08)}
+a{color:#69a7ff;text-decoration:none;word-break:break-all}
+a:hover{text-decoration:underline}
+
+/* Wrap long URLs and stabilize table layout */
+table{table-layout:fixed}
+th:nth-child(1), td:nth-child(1){width:38%}
+th:nth-child(2), td:nth-child(2){width:32%}
+th:nth-child(3), td:nth-child(3){width:10%}
+th:nth-child(4), td:nth-child(4){width:10%}
+th:nth-child(5), td:nth-child(5){width:10%}
+td a{word-break:break-all; overflow-wrap:anywhere}
+
+button.secondary{background:#2d3b52} button.secondary:hover{filter:brightness(1.05)}
+
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0}
+.chip{background:#1b2430;border:1px solid #2a3340;color:#cfd7e3;padding:6px 10px;border-radius:999px;cursor:pointer;font-weight:600}
+.chip.active{background:#2f3b52;border-color:#4b5d7a}
+
+.hint{color:#9aa7b1;font-size:12px;margin-top:4px;display:inline-block}
+.hint[title]{cursor:help}
+
+.hint-line{display:block;margin-top:6px;color:#9aa7b1;font-size:12px}
+
+.hint-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:999px;background:#2f3b52;border:1px solid #4b5d7a;color:#e7edf5;font-weight:700;font-size:12px;margin-left:6px;line-height:1;cursor:help}
+
+/* Progress bar improvements */
+.progress{position:relative;height:10px;background:#2a3340;border-radius:999px;overflow:hidden}
+#barFill{position:absolute;left:0;top:0;height:100%;width:0%;background:#e3b341;transition:width .25s ease-in-out}
+.progress.done #barFill{background:#22c55e}
+
+/* === Progress bar visuals === */
+.progress{
+  position: relative;
+  height: 10px;
+  background: #2a3340;
+  border-radius: 999px;
+  overflow: hidden;
+  padding: 0;
+}
+#barFill{
+  position: absolute;
+  left: 0; top: 0;
+  height: 100%;
+  width: 0%;
+  background: #e3b341; /* running: yellow */
+  transition: width .25s ease-in-out;
+}
+.progress.done #barFill{
+  background: #22c55e; /* done: green */
+}
