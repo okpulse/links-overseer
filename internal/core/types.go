@@ -1,6 +1,7 @@
 package core
 
 type Scope int
+
 const (
 	ScopeAll Scope = iota
 	ScopeInternalOnly
@@ -8,13 +9,14 @@ const (
 )
 
 type StatusClass int
+
 const (
 	StatusAny StatusClass = iota
 	Status2xx
 	Status3xx
 	Status4xx
 	Status5xx
-	StatusError // network/timeouts etc.
+	StatusError
 )
 
 type Result struct {
@@ -27,10 +29,17 @@ type Result struct {
 	Depth      int    `json:"depth"`
 }
 
+type ImageRef struct {
+	URL     string
+	PageURL string
+	Alt     string
+}
+
 type JobParams struct {
-	StartURL      string `json:"start_url"`
-	MaxDepth      int    `json:"max_depth"`
-	RespectRobots bool   `json:"respect_robots"`
+	StartURL       string `json:"start_url"`
+	MaxDepth       int    `json:"max_depth"`
+	RespectRobots  bool   `json:"respect_robots"`
+	DownloadImages bool   `json:"download_images"`
 }
 
 type JobStatus struct {

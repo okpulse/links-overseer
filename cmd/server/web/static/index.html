@@ -11,10 +11,12 @@
     <h1>
       Links Overseer |
       <a href="https://github.com/okpulse" target="_blank" rel="noopener noreferrer">
-      by Pulse
+        by Pulse
       </a>
     </h1>
-    <p class="subtitle">Проверка ссылок: введите стартовый адрес и глубину, получите статусы.</p>
+    <p class="subtitle">
+      Проверка ссылок и сбор картинок: введите стартовый адрес и глубину обхода.
+    </p>
 
     <div class="card">
       <div class="row">
@@ -23,15 +25,35 @@
       </div>
       <div class="row">
         <label>Глубина обхода</label>
-        <input id="depth" type="number" min="0" max="5" value="2" />
-      
-<small class="hint-line">Значения: 2 по умолчанию; 0 — собирать только с указанной страницы; максимум — 5</small></div>
-      <div class="row small">
-        <label><input type="checkbox" id="respectRobots" checked/> Учитывать robots.txt <span class="hint-badge" title="Соблюдаем запреты и задержки из robots.txt (disallow, crawl-delay); сканирование идёт аккуратнее.">?</span></label>
+        <div class="col">
+          <input id="depth" type="number" min="0" max="5" value="2" />
+          <small class="hint-line">
+            2 — по умолчанию; 0 — только указанная страница; максимум - 5.
+          </small>
+        </div>
       </div>
-      <div class="actions"><button id="startBtn">Старт</button><button id="stopBtn" class="secondary">Стоп</button></div>
+      <div class="row small">
+        <label>
+          <input type="checkbox" id="respectRobots" checked />
+          Учитывать <code>robots.txt</code>
+          <span class="hint-inline" title="Будут учитываться правила Disallow и crawl-delay.">?</span>
+        </label>
+      </div>
+      <div class="row small">
+        <label>
+          <input type="checkbox" id="downloadImages" />
+          Скачивать картинки для анализа метаданных и разрешения
+        </label>
+        <small class="hint-line">Если включено — картинки сохраняются в папку сайта и сразу анализируются.</small>
+      </div>
+      <div class="actions">
+        <button id="startBtn">Старт</button>
+        <button id="stopBtn" class="secondary">Стоп</button>
+      </div>
       <div id="progress" class="progress hidden">
-        <div class="bar"><span id="barFill" style="width:0%"></span></div>
+        <div class="bar">
+          <span id="barFill" style="width:0%"></span>
+        </div>
         <div class="stats">
           <span id="statVisited">Visited: 0</span>
           <span id="statQueued">Queued: 0</span>
@@ -41,33 +63,70 @@
       </div>
     </div>
 
-    <div class="filters card">
-  <div class="chip-row" id="filterChips">
-    <button class="chip active" data-mode="all">Все</button>
-    <button class="chip" data-mode="internal">Внутренние</button>
-    <button class="chip" data-mode="external">Внешние</button>
-    <button class="chip" data-mode="2">2xx</button>
-    <button class="chip" data-mode="3">3xx</button>
-    <button class="chip" data-mode="4">4xx</button>
-    <button class="chip" data-mode="5">5xx</button>
-    <button class="chip" data-mode="e">Ошибки</button>
-  </div>
-  <div id="summary" class="summary"></div>
-</div>
-
     <div class="card">
-      <table id="table">
-        <thead>
-          <tr>
-            <th>URL</th>
-            <th>Site page</th>
-            <th>Status</th>
-            <th>Time, ms</th>
-            <th>In?</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="tabs" id="mainTabs">
+        <button class="tab active" data-tab="links">Ссылки</button>
+        <button class="tab" data-tab="images">Картинки</button>
+      </div>
+
+      <div id="linksPanel">
+        <div class="chip-row" id="filterChips">
+          <button class="chip active" data-mode="all">Все</button>
+          <button class="chip" data-mode="internal">Внутренние</button>
+          <button class="chip" data-mode="external">Внешние</button>
+          <button class="chip" data-mode="2">2xx</button>
+          <button class="chip" data-mode="3">3xx</button>
+          <button class="chip" data-mode="4">4xx</button>
+          <button class="chip" data-mode="5">5xx</button>
+          <button class="chip" data-mode="e">Ошибки</button>
+        </div>
+        <div id="summary" class="summary"></div>
+
+        <div class="table-wrapper">
+          <table id="table">
+            <thead>
+              <tr>
+                <th>URL</th>
+                <th>Site page</th>
+                <th>Status</th>
+                <th>Time, ms</th>
+                <th>In?</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="imagesPanel" class="hidden-panel">
+        <p class="subtitle small-sub">
+          Галерея всех найденных картинок на сайте. Клик по превью — увеличить. Для анализа метаданных нажмите "Скачать".
+        </p>
+        <div class="table-wrapper">
+          <table id="imagesTable" class="images-table">
+            <thead>
+              <tr>
+                <th>Картинка</th>
+                <th>URL картинки</th>
+                <th>Страница</th>
+                <th>ALT</th>
+                <th>Разрешение</th>
+                <th>Метаданные</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="imageModal" class="img-modal hidden">
+    <div class="img-modal-backdrop"></div>
+    <div class="img-modal-content">
+      <button id="imageModalClose" class="img-modal-close" type="button">×</button>
+      <img id="imageModalImg" src="" alt=""/>
     </div>
   </div>
 
