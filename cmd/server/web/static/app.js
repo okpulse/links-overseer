@@ -9,6 +9,23 @@
   let MODE = 'all';
   let ACTIVE_TAB = 'links';
 
+  let WHOIS_LOADED = false;
+  let WHOIS_LOADING = false;
+  let WHOIS_DATA = null;
+  let WHOIS_TARGET = null;
+
+  function setWhoisLoadingVisible(visible){
+    const el = $("#whoisLoading");
+    if (!el) return;
+    el.style.display = visible ? "block" : "none";
+  }
+
+  // Спрячем лоадер по умолчанию
+  document.addEventListener("DOMContentLoaded", () => {
+    setWhoisLoadingVisible(false);
+  });
+
+
   function setActiveTab(tab){
     ACTIVE_TAB = tab;
     $$(".tab").forEach(btn => {
@@ -16,14 +33,18 @@
     });
     const linksPanel = $("#linksPanel");
     const imagesPanel = $("#imagesPanel");
-    if (linksPanel && imagesPanel){
+    const whoisPanel = $("#whoisPanel");
+    if (linksPanel && imagesPanel && whoisPanel){
       linksPanel.classList.toggle("hidden-panel", tab !== "links");
       imagesPanel.classList.toggle("hidden-panel", tab !== "images");
+      whoisPanel.classList.toggle("hidden-panel", tab !== "whois");
     }
     if (tab === "links") {
       renderTable();
-    } else {
+    } else if (tab === "images") {
       renderImages();
+    } else if (tab === "whois") {
+      loadWhoisIfNeeded();
     }
   }
 
@@ -415,6 +436,144 @@
   }
   if (modalClose){
     modalClose.addEventListener("click", closeImageModal);
+  }
+
+
+  function getWhoisTarget(){
+    const input = $("#startUrl");
+    if (!input) return "";
+    return (input.value || "").trim();
+  }
+
+  function loadWhoisIfNeeded(){
+    const target = getWhoisTarget();
+    const errorEl = $("#whoisError");
+    const loadingEl = $("#whoisLoading");
+    const summaryWrapper = $("#whoisSummaryWrapper");
+    const rawWrapper = $("#whoisRawWrapper");
+
+    if (!target) {
+      setWhoisLoadingVisible(false);
+      if (loadingEl) loadingEl.classList.add("hidden");
+      if (summaryWrapper) summaryWrapper.classList.add("hidden");
+      if (rawWrapper) rawWrapper.classList.add("hidden");
+      if (errorEl) errorEl.classList.add("hidden");
+      WHOIS_LOADED = false;
+      WHOIS_DATA = null;
+      WHOIS_TARGET = null;
+      return;
+    }
+
+    if (WHOIS_LOADED && WHOIS_DATA && WHOIS_TARGET === target) {
+      renderWhois(WHOIS_DATA);
+      return;
+    }
+
+    if (WHOIS_LOADING) {
+      return;
+    }
+
+    WHOIS_LOADED = false;
+    WHOIS_DATA = null;
+    WHOIS_TARGET = null;
+    loadWhois(target);
+  }
+
+  async function loadWhois(target){
+    const loadingEl = $("#whoisLoading");
+    const errorEl = $("#whoisError");
+    const summaryWrapper = $("#whoisSummaryWrapper");
+    const rawWrapper = $("#whoisRawWrapper");
+
+    WHOIS_LOADING = true;
+    if (errorEl) errorEl.classList.add("hidden");
+    if (summaryWrapper) summaryWrapper.classList.add("hidden");
+    if (rawWrapper) rawWrapper.classList.add("hidden");
+    setWhoisLoadingVisible(true);
+
+    try {
+      const res = await fetch("/api/whois?target=" + encodeURIComponent(target));
+      if (!res.ok) {
+        let txt = "";
+        try {
+          txt = await res.text();
+        } catch(e){}
+        throw new Error(txt || ("HTTP " + res.status));
+      }
+      const data = await res.json();
+      WHOIS_DATA = data;
+      WHOIS_TARGET = target;
+      WHOIS_LOADED = true;
+      renderWhois(data);
+    } catch (e) {
+      WHOIS_LOADED = false;
+      WHOIS_DATA = null;
+      WHOIS_TARGET = null;
+      if (errorEl) {
+        const msg = (e && e.message) ? e.message : "ошибка запроса";
+        errorEl.textContent = "Не удалось получить WHOIS: " + msg;
+        errorEl.classList.remove("hidden");
+      }
+    } finally {
+      WHOIS_LOADING = false;
+      setWhoisLoadingVisible(false);
+    }
+  }
+
+  function renderWhois(data){
+    const summaryWrapper = $("#whoisSummaryWrapper");
+    const rawWrapper = $("#whoisRawWrapper");
+    const tbody = $("#whoisSummaryTable tbody");
+    const rawEl = $("#whoisRaw");
+    const loadingEl = $("#whoisLoading");
+    const errorEl = $("#whoisError");
+
+    setWhoisLoadingVisible(false);
+    if (errorEl) errorEl.classList.add("hidden");
+
+    if (!summaryWrapper || !rawWrapper || !tbody || !rawEl) {
+      return;
+    }
+
+    tbody.innerHTML = "";
+
+    function addRow(label, value){
+      if (value === undefined || value === null) return;
+      if (Array.isArray(value) && value.length === 0) return;
+      const tr = document.createElement("tr");
+      const tdKey = document.createElement("td");
+      tdKey.textContent = label;
+      const tdVal = document.createElement("td");
+      if (Array.isArray(value)) {
+        tdVal.textContent = value.join(", ");
+      } else {
+        tdVal.textContent = value;
+      }
+      tr.appendChild(tdKey);
+      tr.appendChild(tdVal);
+      tbody.appendChild(tr);
+    }
+
+    addRow("Домен", data && data.domain || "");
+    addRow("IP", data && data.ip || "");
+    addRow("Регистратор", data && data.registrar || "");
+    addRow("Владелец", data && data.registrant || "");
+    addRow("Организация", data && data.org_name || "");
+    addRow("Адрес организации", data && data.org_address || "");
+    addRow("Создан", data && data.creation_date || "");
+    addRow("Обновлён", data && data.updated_date || "");
+    addRow("Истекает", data && data.expiration_date || "");
+
+    if (data && Array.isArray(data.name_servers) && data.name_servers.length){
+      addRow("Name servers", data.name_servers);
+    }
+    if (data && Array.isArray(data.emails) && data.emails.length){
+      addRow("E-mail", data.emails);
+    }
+
+    summaryWrapper.classList.remove("hidden");
+    rawEl.textContent = (data && data.raw) ? data.raw : "";
+    rawWrapper.classList.remove("hidden");
   }
 
   function escapeHtml(s){

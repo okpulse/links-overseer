@@ -118,6 +118,7 @@ func main() {
 	mux.HandleFunc("/api/start", handleStart)
 	mux.HandleFunc("/api/status", handleStatus)
 	mux.HandleFunc("/api/results", handleResults)
+	mux.HandleFunc("/api/whois", handleWhois)
 	mux.HandleFunc("/api/images", handleImages)
 	mux.HandleFunc("/api/images/download", handleImageDownload)
 	mux.HandleFunc("/api/stop", handleStop)

@@ -67,6 +67,7 @@
       <div class="tabs" id="mainTabs">
         <button class="tab active" data-tab="links">Ссылки</button>
         <button class="tab" data-tab="images">Картинки</button>
+        <button class="tab" data-tab="whois">WHOIS</button>
       </div>
 
       <div id="linksPanel">
@@ -117,6 +118,30 @@
             </thead>
             <tbody></tbody>
           </table>
+        </div>
+      </div>
+      <div id="whoisPanel" class="hidden-panel">
+        <p class="subtitle small-sub">
+          WHOIS-информация о домене, который вы сканируете. Данные загружаются при первом открытии этой вкладки.
+        </p>
+        <div id="whoisContent">
+          <div id="whoisLoading" class="whois-status hidden">Загружаем WHOIS...</div>
+          <div id="whoisError" class="whois-status whois-error hidden"></div>
+          <div id="whoisSummaryWrapper" class="table-wrapper hidden">
+            <table id="whoisSummaryTable" class="links-table whois-table">
+              <thead>
+                <tr>
+                  <th>Поле</th>
+                  <th>Значение</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div id="whoisRawWrapper" class="whois-raw hidden">
+            <h3>Полные данные WHOIS</h3>
+            <pre id="whoisRaw"></pre>
+          </div>
         </div>
       </div>
     </div>
