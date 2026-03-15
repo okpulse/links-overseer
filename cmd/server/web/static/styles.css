@@ -227,3 +227,93 @@ button.secondary{background:#2d3b52} button.secondary:hover{filter:brightness(1.
 .whois-error{
   color:var(--bad);
 }
+
+.documents-table{table-layout:fixed;}
+.documents-table th:nth-child(1), .documents-table td:nth-child(1){width:16%;}
+.documents-table th:nth-child(2), .documents-table td:nth-child(2){width:8%;white-space:nowrap;}
+.documents-table th:nth-child(3), .documents-table td:nth-child(3){width:24%;}
+.documents-table th:nth-child(4), .documents-table td:nth-child(4){width:22%;}
+.documents-table th:nth-child(5), .documents-table td:nth-child(5){width:10%;white-space:nowrap;}
+.documents-table th:nth-child(6), .documents-table td:nth-child(6){width:14%;}
+.documents-table th:nth-child(7), .documents-table td:nth-child(7){width:12%;}
+.documents-table td{word-break:break-word; overflow-wrap:anywhere;}
+
+.documents-toolbar{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:center;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+}
+.documents-actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+#documentsReportWrapper{
+  padding-top:8px;
+}
+.docs-report-summary{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:12px;
+  margin-bottom:16px;
+}
+.docs-report-card{
+  background:#0e1116;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px;
+}
+.docs-report-card-value{
+  font-size:24px;
+  font-weight:800;
+}
+.docs-report-card-label{
+  color:var(--muted);
+  margin-top:4px;
+}
+.docs-report-section{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:12px;
+  background:#0e1116;
+}
+.docs-report-section h3{
+  margin:0 0 10px 0;
+}
+.docs-report-details{
+  border-top:1px solid #1f2630;
+  padding-top:8px;
+  margin-top:8px;
+}
+.docs-report-details summary{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  cursor:pointer;
+  list-style:none;
+}
+.docs-report-details summary::-webkit-details-marker{display:none}
+.docs-report-value{font-weight:600}
+.docs-report-badge{
+  background:#1b2430;
+  border:1px solid #2a3340;
+  border-radius:999px;
+  padding:2px 8px;
+  white-space:nowrap;
+}
+.docs-report-doc-list{
+  margin:10px 0 0 16px;
+  padding:0;
+}
+.docs-report-doc-list li{margin-bottom:8px}
+.docs-report-page{color:var(--muted)}
+.docs-report-empty{
+  border:1px dashed var(--border);
+  border-radius:12px;
+  padding:16px;
+  color:var(--muted);
+}

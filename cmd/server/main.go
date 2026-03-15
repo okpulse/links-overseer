@@ -47,10 +47,16 @@ type Job struct {
 	Results []core.Result
 
 	Images    []ImageItem
+	Documents []DocumentItem
 	nextImgID int64
+	nextDocID int64
 
-	mu     sync.Mutex
-	cancel context.CancelFunc
+	mu            sync.Mutex
+	ctx           context.Context
+	cancel        context.CancelFunc
+	stopRequested bool
+	stopCh        chan struct{}
+	stopOnce      sync.Once
 }
 
 type ImageItem struct {
@@ -121,6 +127,9 @@ func main() {
 	mux.HandleFunc("/api/whois", handleWhois)
 	mux.HandleFunc("/api/images", handleImages)
 	mux.HandleFunc("/api/images/download", handleImageDownload)
+	mux.HandleFunc("/api/documents", handleDocuments)
+	mux.HandleFunc("/api/documents/download", handleDocumentDownload)
+	mux.HandleFunc("/api/documents/report.pdf", handleDocumentsReportPDF)
 	mux.HandleFunc("/api/stop", handleStop)
 
 	// скачанные картинки: ./data/<host>/...
@@ -150,10 +159,11 @@ func handleStart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		StartURL       string `json:"start_url"`
-		Depth          int    `json:"depth"`
-		RespectRobots  bool   `json:"respect_robots"`
-		DownloadImages bool   `json:"download_images"`
+		StartURL          string `json:"start_url"`
+		Depth             int    `json:"depth"`
+		RespectRobots     bool   `json:"respect_robots"`
+		DownloadImages    bool   `json:"download_images"`
+		DownloadDocuments bool   `json:"download_documents"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -177,16 +187,19 @@ func handleStart(w http.ResponseWriter, r *http.Request) {
 	job := &Job{
 		ID: newID(),
 		Params: core.JobParams{
-			StartURL:       u.String(),
-			MaxDepth:       req.Depth,
-			RespectRobots:  req.RespectRobots,
-			DownloadImages: req.DownloadImages,
+			StartURL:          u.String(),
+			MaxDepth:          req.Depth,
+			RespectRobots:     req.RespectRobots,
+			DownloadImages:    req.DownloadImages,
+			DownloadDocuments: req.DownloadDocuments,
 		},
 		Status: core.JobStatus{
 			State: "queued",
 		},
-		Results: make([]core.Result, 0),
-		Images:  make([]ImageItem, 0),
+		Results:   make([]core.Result, 0),
+		Images:    make([]ImageItem, 0),
+		Documents: make([]DocumentItem, 0),
+		stopCh:    make(chan struct{}),
 	}
 
 	jobs.Store(job.ID, job)
@@ -201,7 +214,7 @@ func runJob(job *Job) {
 	job.Status.State = "running"
 	job.mu.Unlock()
 
-	if job.Params.DownloadImages {
+	if job.Params.DownloadImages || job.Params.DownloadDocuments {
 		ensureDataDir(job)
 	}
 
@@ -209,8 +222,7 @@ func runJob(job *Job) {
 	checker := core.NewChecker("PulseLinkChecker/1.0 (+local)")
 	crawler := core.NewCrawler(u, job.Params.MaxDepth, job.Params.RespectRobots, checker)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	job.cancel = cancel
+	ctx := jobContext(job)
 
 	resMu := sync.Mutex{}
 	sink := func(r core.Result) {
@@ -221,6 +233,10 @@ func runJob(job *Job) {
 
 	imgSink := func(ir core.ImageRef) {
 		addImageToJob(job, ir.URL, ir.PageURL, ir.Alt)
+	}
+
+	docSink := func(dr core.DocumentRef) {
+		addDocumentToJob(job, dr)
 	}
 
 	progress := func(p core.CrawlProgress) {
@@ -244,15 +260,33 @@ func runJob(job *Job) {
 		job.mu.Unlock()
 	}
 
-	if err := crawler.Crawl(ctx, u, progress, sink, imgSink); err != nil {
+	if err := crawler.Crawl(ctx, u, progress, sink, imgSink, docSink); err != nil {
 		job.mu.Lock()
-		job.Status.State = "failed"
+		if ctx.Err() == context.Canceled {
+			job.Status.State = "canceled"
+		} else {
+			job.Status.State = "failed"
+		}
+		job.mu.Unlock()
+		return
+	}
+
+	if ctx.Err() == context.Canceled {
+		job.mu.Lock()
+		job.Status.State = "canceled"
 		job.mu.Unlock()
 		return
 	}
 
 	// Дополнительный проход
 	collectImagesForJob(job)
+
+	if ctx.Err() == context.Canceled {
+		job.mu.Lock()
+		job.Status.State = "canceled"
+		job.mu.Unlock()
+		return
+	}
 
 	job.mu.Lock()
 	job.Status.State = "done"
@@ -620,11 +654,16 @@ func handleStop(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	job := v.(*Job)
-	if job.cancel != nil {
-		job.cancel()
-		job.mu.Lock()
-		job.Status.State = "canceled"
-		job.mu.Unlock()
-	}
+	job.mu.Lock()
+	job.Params.DownloadDocuments = false
+	job.Params.DownloadImages = false
+	job.Status.State = "canceled"
+	job.stopRequested = true
+	job.mu.Unlock()
+	job.stopOnce.Do(func() {
+		if job.stopCh != nil {
+			close(job.stopCh)
+		}
+	})
 	w.WriteHeader(http.StatusNoContent)
 }

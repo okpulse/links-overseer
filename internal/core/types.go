@@ -35,11 +35,19 @@ type ImageRef struct {
 	Alt     string
 }
 
+type DocumentRef struct {
+	URL      string
+	PageURL  string
+	FileName string
+	FileType string
+}
+
 type JobParams struct {
-	StartURL       string `json:"start_url"`
-	MaxDepth       int    `json:"max_depth"`
-	RespectRobots  bool   `json:"respect_robots"`
-	DownloadImages bool   `json:"download_images"`
+	StartURL          string `json:"start_url"`
+	MaxDepth          int    `json:"max_depth"`
+	RespectRobots     bool   `json:"respect_robots"`
+	DownloadImages    bool   `json:"download_images"`
+	DownloadDocuments bool   `json:"download_documents"`
 }
 
 type JobStatus struct {

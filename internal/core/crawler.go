@@ -121,7 +121,7 @@ func (c *Crawler) fetch(ctx context.Context, u *url.URL) (*http.Response, error)
 	return resp, nil
 }
 
-func (c *Crawler) extractLinks(resp *http.Response, base *url.URL, imgSink func(ImageRef)) []*url.URL {
+func (c *Crawler) extractLinks(resp *http.Response, base *url.URL, imgSink func(ImageRef), docSink func(DocumentRef)) []*url.URL {
 	defer resp.Body.Close()
 	n := []*url.URL{}
 	doc, err := html.Parse(resp.Body)
@@ -134,6 +134,10 @@ func (c *Crawler) extractLinks(resp *http.Response, base *url.URL, imgSink func(
 		if node.Type == html.ElementNode {
 			// Links <a href="...">
 			if strings.EqualFold(node.Data, "a") {
+				var linkText string
+				if node.FirstChild != nil && node.FirstChild.Type == html.TextNode {
+					linkText = strings.TrimSpace(node.FirstChild.Data)
+				}
 				for _, a := range node.Attr {
 					if strings.EqualFold(a.Key, "href") {
 						raw := strings.TrimSpace(a.Val)
@@ -144,6 +148,20 @@ func (c *Crawler) extractLinks(resp *http.Response, base *url.URL, imgSink func(
 						if err == nil {
 							if u2.Scheme == "http" || u2.Scheme == "https" {
 								n = append(n, u2)
+								if docSink != nil {
+									if ft, ok := DetectDocumentType(u2.Path); ok {
+										name := linkText
+										if name == "" {
+											name = GuessFileNameFromURL(u2.String())
+										}
+										docSink(DocumentRef{
+											URL:      u2.String(),
+											PageURL:  base.String(),
+											FileName: name,
+											FileType: ft,
+										})
+									}
+								}
 							}
 						}
 						break
@@ -234,7 +252,7 @@ func (c *Crawler) checkLinkAndSink(ctx context.Context, page *url.URL, u *url.UR
 	}
 }
 
-func (c *Crawler) Crawl(ctx context.Context, start *url.URL, progress func(CrawlProgress), sink func(Result), imgSink func(ImageRef)) error {
+func (c *Crawler) Crawl(ctx context.Context, start *url.URL, progress func(CrawlProgress), sink func(Result), imgSink func(ImageRef), docSink func(DocumentRef)) error {
 	type Item struct {
 		u     *url.URL
 		depth int
@@ -270,7 +288,7 @@ func (c *Crawler) Crawl(ctx context.Context, start *url.URL, progress func(Crawl
 				continue
 			}
 			base := resp.Request.URL
-			links := c.extractLinks(resp, base, imgSink)
+			links := c.extractLinks(resp, base, imgSink, docSink)
 
 			for _, u2 := range links {
 				norm := c.Normalizer.Normalize(u2)

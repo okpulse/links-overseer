@@ -15,7 +15,7 @@
       </a>
     </h1>
     <p class="subtitle">
-      Проверка ссылок и сбор картинок: введите стартовый адрес и глубину обхода.
+      Проверка ссылок, сбор картинок и документов: введите стартовый адрес и глубину обхода.
     </p>
 
     <div class="card">
@@ -46,6 +46,13 @@
         </label>
         <small class="hint-line">Если включено — картинки сохраняются в папку сайта и сразу анализируются.</small>
       </div>
+      <div class="row small">
+        <label>
+          <input type="checkbox" id="downloadDocuments" />
+          Скачивать документы для анализа метаданных
+        </label>
+        <small class="hint-line">Если включено — документы сохраняются в папку сайта и сразу анализируются.</small>
+      </div>
       <div class="actions">
         <button id="startBtn">Старт</button>
         <button id="stopBtn" class="secondary">Стоп</button>
@@ -67,6 +74,7 @@
       <div class="tabs" id="mainTabs">
         <button class="tab active" data-tab="links">Ссылки</button>
         <button class="tab" data-tab="images">Картинки</button>
+        <button class="tab" data-tab="documents">Документы</button>
         <button class="tab" data-tab="whois">WHOIS</button>
       </div>
 
@@ -119,6 +127,48 @@
             <tbody></tbody>
           </table>
         </div>
+      </div>
+
+
+      <div id="documentsPanel" class="hidden-panel">
+        <p class="subtitle small-sub">
+          Все найденные документы на сайте. Можно скачивать по одному или включить массовое скачивание перед стартом.
+        </p>
+        <div class="documents-toolbar">
+          <div id="documentsSummary" class="summary"></div>
+          <div id="documentsActions" class="documents-actions">
+            <button id="downloadAllDocumentsBtn" type="button" class="secondary">Скачать все</button>
+            <button id="documentsReportBtn" type="button" class="secondary">Отчёт</button>
+            <button id="documentsTableBtn" type="button" class="secondary hidden-panel">К таблице</button>
+            <button id="documentsExportPdfBtn" type="button" class="secondary">Экспорт PDF</button>
+            <button id="documentsExportJsonBtn" type="button" class="secondary">Экспорт JSON</button>
+          </div>
+        </div>
+        <div id="documentFilterChips" class="chip-row">
+          <button class="chip active" data-doc-mode="all">Все</button>
+          <button class="chip" data-doc-mode="pdf">PDF</button>
+          <button class="chip" data-doc-mode="doc">DOC/DOCX</button>
+          <button class="chip" data-doc-mode="xls">XLS/XLSX</button>
+          <button class="chip" data-doc-mode="ppt">PPT/PPTX</button>
+          <button class="chip" data-doc-mode="txt">TXT</button>
+        </div>
+        <div id="documentsTableWrapper" class="table-wrapper">
+          <table id="documentsTable" class="documents-table">
+            <thead>
+              <tr>
+                <th>Имя</th>
+                <th>Тип</th>
+                <th>URL файла</th>
+                <th>Страница</th>
+                <th>Размер</th>
+                <th>Статус / метаданные</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div id="documentsReportWrapper" class="hidden-panel"></div>
       </div>
       <div id="whoisPanel" class="hidden-panel">
         <p class="subtitle small-sub">
