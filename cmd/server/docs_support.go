@@ -369,7 +369,7 @@ func fetchDocumentBytes(ctx context.Context, fileURL, pageURL, startURL string) 
 
 	if pageURL != "" {
 		if _, _, _, _, err := doDocumentRequest(ctx, client, pageURL, pageURL); err != nil {
-			// cookies 
+			// cookies
 		}
 	}
 
@@ -2030,6 +2030,7 @@ type documentsReportSection struct {
 
 type documentsReportData struct {
 	Title            string                   `json:"title"`
+	Language         string                   `json:"language"`
 	Site             string                   `json:"site"`
 	CreatedAt        string                   `json:"createdAt"`
 	CreatedAtDisplay string                   `json:"createdAtDisplay"`
@@ -2050,6 +2051,7 @@ type reportEntry struct {
 }
 
 func handleDocumentsReportPDF(w http.ResponseWriter, r *http.Request) {
+	lang := normalizeReportLang(r.URL.Query().Get("lang"))
 	jobID := strings.TrimSpace(r.URL.Query().Get("job"))
 	if jobID == "" {
 		http.Error(w, "bad request", http.StatusBadRequest)
@@ -2061,9 +2063,9 @@ func handleDocumentsReportPDF(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	job := v.(*Job)
-	report := buildDocumentsReportExportData(job)
+	report := buildDocumentsReportExportData(job, lang)
 	if report.Summary.DownloadedDocuments == 0 {
-		http.Error(w, "Нет скачанных документов для экспорта.", http.StatusBadRequest)
+		http.Error(w, reportText(lang, "noDownloaded"), http.StatusBadRequest)
 		return
 	}
 	pdfBytes, fileName, err := generateDocumentsReportPDF(report)
@@ -2077,7 +2079,7 @@ func handleDocumentsReportPDF(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(pdfBytes)
 }
 
-func buildDocumentsReportExportData(job *Job) documentsReportData {
+func buildDocumentsReportExportData(job *Job, lang string) documentsReportData {
 	now := time.Now()
 	report := buildDocumentsReportData(job)
 	site := ""
@@ -2087,7 +2089,8 @@ func buildDocumentsReportExportData(job *Job) documentsReportData {
 		job.mu.Unlock()
 	}
 	return documentsReportData{
-		Title:            "Отчёт изучения метаданных",
+		Title:            reportText(lang, "title"),
+		Language:         normalizeReportLang(lang),
 		Site:             site,
 		CreatedAt:        now.UTC().Format(time.RFC3339),
 		CreatedAtDisplay: formatReportDate(now),
@@ -2097,8 +2100,61 @@ func buildDocumentsReportExportData(job *Job) documentsReportData {
 			SectionsCount:       len(report.sections),
 			ValuesCount:         report.valuesCount,
 		},
-		Categories: report.sections,
+		Categories: localizedReportSections(report.sections, lang),
 	}
+}
+
+func normalizeReportLang(lang string) string {
+	lang = strings.ToLower(strings.TrimSpace(lang))
+	switch lang {
+	case "en":
+		return "en"
+	default:
+		return "ru"
+	}
+}
+
+func reportText(lang, key string) string {
+	lang = normalizeReportLang(lang)
+	values := map[string]map[string]string{
+		"ru": {
+			"title":        "Отчёт изучения метаданных",
+			"site":         "Сайт",
+			"createdAt":    "Дата создания",
+			"downloaded":   "Скачано документов",
+			"withMetadata": "С метаданными",
+			"sections":     "Разделов метаданных",
+			"values":       "Всего найденных значений",
+			"noDownloaded": "Нет скачанных документов для экспорта.",
+			"other":        "Другое",
+		},
+		"en": {
+			"title":        "Metadata Analysis Report",
+			"site":         "Site",
+			"createdAt":    "Created at",
+			"downloaded":   "Downloaded documents",
+			"withMetadata": "With metadata",
+			"sections":     "Metadata sections",
+			"values":       "Total found values",
+			"noDownloaded": "No downloaded documents to export.",
+			"other":        "Other",
+		},
+	}
+	if v, ok := values[lang][key]; ok {
+		return v
+	}
+	return values["ru"][key]
+}
+
+func localizedReportSections(sections []documentsReportSection, lang string) []documentsReportSection {
+	out := make([]documentsReportSection, 0, len(sections))
+	for _, section := range sections {
+		if strings.EqualFold(strings.TrimSpace(section.Key), "Другое") {
+			section.Key = reportText(lang, "other")
+		}
+		out = append(out, section)
+	}
+	return out
 }
 
 type builtDocumentsReport struct {
@@ -2290,11 +2346,12 @@ func generateDocumentsReportPDF(report documentsReportData) ([]byte, string, err
 	pdf.CellFormat(0, 10, report.Title, "", 1, "L", false, 0, "")
 	pdf.Ln(2)
 	pdf.SetFont("main", "", 11)
-	pdf.MultiCell(0, 6, "Сайт: "+firstNonEmpty(report.Site, "—"), "", "L", false)
-	pdf.MultiCell(0, 6, "Дата создания: "+report.CreatedAtDisplay, "", "L", false)
+	lang := normalizeReportLang(report.Language)
+	pdf.MultiCell(0, 6, reportText(lang, "site")+": "+firstNonEmpty(report.Site, "—"), "", "L", false)
+	pdf.MultiCell(0, 6, reportText(lang, "createdAt")+": "+report.CreatedAtDisplay, "", "L", false)
 	pdf.Ln(3)
 
-	cards := [][2]string{{"Скачано документов", strconv.Itoa(report.Summary.DownloadedDocuments)}, {"С метаданными", strconv.Itoa(report.Summary.WithMetadata)}, {"Разделов метаданных", strconv.Itoa(report.Summary.SectionsCount)}, {"Всего найденных значений", strconv.Itoa(report.Summary.ValuesCount)}}
+	cards := [][2]string{{reportText(lang, "downloaded"), strconv.Itoa(report.Summary.DownloadedDocuments)}, {reportText(lang, "withMetadata"), strconv.Itoa(report.Summary.WithMetadata)}, {reportText(lang, "sections"), strconv.Itoa(report.Summary.SectionsCount)}, {reportText(lang, "values"), strconv.Itoa(report.Summary.ValuesCount)}}
 	pdf.SetFont("main", "", 12)
 	maxLabelW := 0.0
 	for _, card := range cards {

@@ -8,86 +8,95 @@
 </head>
 <body>
   <div class="container">
-    <h1>
-      Links Overseer |
-      <a href="https://github.com/okpulse" target="_blank" rel="noopener noreferrer">
-        by Pulse
-      </a>
-    </h1>
-    <p class="subtitle">
+    <div class="topbar">
+      <h1>
+        Links Overseer |
+        <a href="https://github.com/okpulse" target="_blank" rel="noopener noreferrer">
+          by Pulse
+        </a>
+      </h1>
+      <label class="language-switcher">
+        <span data-i18n="ui.language">Язык</span>
+        <select id="languageSelect" aria-label="Language">
+          <option value="ru">RU</option>
+          <option value="en">EN</option>
+        </select>
+      </label>
+    </div>
+    <p class="subtitle" data-i18n="app.subtitle">
       Проверка ссылок, сбор картинок и документов: введите стартовый адрес и глубину обхода.
     </p>
 
     <div class="card">
       <div class="row">
-        <label>Стартовый URL</label>
+        <label data-i18n="form.startUrl">Стартовый URL</label>
         <input id="startUrl" placeholder="https://example.com" />
       </div>
       <div class="row">
-        <label>Глубина обхода</label>
+        <label data-i18n="form.depth">Глубина обхода</label>
         <div class="col">
           <input id="depth" type="number" min="0" max="5" value="2" />
-          <small class="hint-line">
-            2 — по умолчанию; 0 — только указанная страница; максимум - 5.
+          <small class="hint-line" data-i18n="form.depthHint">
+            2 — по умолчанию; 0 — только указанная страница; максимум — 5.
           </small>
         </div>
       </div>
       <div class="row small">
         <label>
           <input type="checkbox" id="respectRobots" checked />
-          Учитывать <code>robots.txt</code>
-          <span class="hint-inline" title="Будут учитываться правила Disallow и crawl-delay.">?</span>
+          <span data-i18n="form.respectRobots">Учитывать</span> <code>robots.txt</code>
+          <span class="hint-inline" data-i18n-title="form.robotsTitle" title="Будут учитываться правила Disallow и crawl-delay.">?</span>
         </label>
       </div>
       <div class="row small">
         <label>
           <input type="checkbox" id="downloadImages" />
-          Скачивать картинки для анализа метаданных и разрешения
+          <span data-i18n="form.downloadImages">Скачивать картинки для анализа метаданных и разрешения</span>
         </label>
-        <small class="hint-line">Если включено — картинки сохраняются в папку сайта и сразу анализируются.</small>
+        <small class="hint-line" data-i18n="form.downloadImagesHint">Если включено — картинки сохраняются в папку сайта и сразу анализируются.</small>
       </div>
       <div class="row small">
         <label>
           <input type="checkbox" id="downloadDocuments" />
-          Скачивать документы для анализа метаданных
+          <span data-i18n="form.downloadDocuments">Скачивать документы для анализа метаданных</span>
         </label>
-        <small class="hint-line">Если включено — документы сохраняются в папку сайта и сразу анализируются.</small>
+        <small class="hint-line" data-i18n="form.downloadDocumentsHint">Если включено — документы сохраняются в папку сайта и сразу анализируются.</small>
       </div>
       <div class="actions">
-        <button id="startBtn">Старт</button>
-        <button id="stopBtn" class="secondary">Стоп</button>
+        <button id="startBtn" data-i18n="buttons.start">Старт</button>
+        <button id="stopBtn" class="secondary" data-i18n="buttons.stop">Стоп</button>
       </div>
       <div id="progress" class="progress hidden">
         <div class="bar">
           <span id="barFill" style="width:0%"></span>
         </div>
         <div class="stats">
-          <span id="statVisited">Visited: 0</span>
-          <span id="statQueued">Queued: 0</span>
-          <span id="statDiscovered">Discovered: 0</span>
-          <span id="statErrors">Errors: 0</span>
+          <span id="statVisited">Посещено: 0</span>
+          <span id="statQueued">В очереди: 0</span>
+          <span id="statDiscovered">Найдено: 0</span>
+          <span id="statErrors">Ошибки: 0</span>
         </div>
       </div>
     </div>
 
     <div class="card">
       <div class="tabs" id="mainTabs">
-        <button class="tab active" data-tab="links">Ссылки</button>
-        <button class="tab" data-tab="images">Картинки</button>
-        <button class="tab" data-tab="documents">Документы</button>
+        <button class="tab active" data-tab="links" data-i18n="tabs.links">Ссылки</button>
+        <button class="tab" data-tab="images" data-i18n="tabs.images">Картинки</button>
+        <button class="tab" data-tab="documents" data-i18n="tabs.documents">Документы</button>
         <button class="tab" data-tab="whois">WHOIS</button>
       </div>
 
       <div id="linksPanel">
         <div class="chip-row" id="filterChips">
-          <button class="chip active" data-mode="all">Все</button>
-          <button class="chip" data-mode="internal">Внутренние</button>
-          <button class="chip" data-mode="external">Внешние</button>
+          <button class="chip active" data-mode="all" data-i18n="filters.all">Все</button>
+          <button class="chip" data-mode="internal" data-i18n="filters.internal">Внутренние</button>
+          <button class="chip" data-mode="external" data-i18n="filters.external">Внешние</button>
           <button class="chip" data-mode="2">2xx</button>
           <button class="chip" data-mode="3">3xx</button>
           <button class="chip" data-mode="4">4xx</button>
           <button class="chip" data-mode="5">5xx</button>
-          <button class="chip" data-mode="e">Ошибки</button>
+          <button class="chip" data-mode="e" data-i18n="filters.errors">Ошибки</button>
         </div>
         <div id="summary" class="summary"></div>
 
@@ -96,10 +105,10 @@
             <thead>
               <tr>
                 <th>URL</th>
-                <th>Site page</th>
-                <th>Status</th>
-                <th>Time, ms</th>
-                <th>In?</th>
+                <th data-i18n="links.sitePage">Страница сайта</th>
+                <th data-i18n="links.status">Статус</th>
+                <th data-i18n="links.timeMs">Время, мс</th>
+                <th data-i18n="links.internalShort">Внутр.?</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -108,20 +117,20 @@
       </div>
 
       <div id="imagesPanel" class="hidden-panel">
-        <p class="subtitle small-sub">
-          Галерея всех найденных картинок на сайте. Клик по превью — увеличить. Для анализа метаданных нажмите "Скачать".
+        <p class="subtitle small-sub" data-i18n="images.subtitle">
+          Галерея всех найденных картинок на сайте. Клик по превью — увеличить. Для анализа метаданных нажмите «Скачать».
         </p>
         <div class="table-wrapper">
           <table id="imagesTable" class="images-table">
             <thead>
               <tr>
-                <th>Картинка</th>
-                <th>URL картинки</th>
-                <th>Страница</th>
+                <th data-i18n="images.image">Картинка</th>
+                <th data-i18n="images.imageUrl">URL картинки</th>
+                <th data-i18n="images.page">Страница</th>
                 <th>ALT</th>
-                <th>Разрешение</th>
-                <th>Метаданные</th>
-                <th>Действия</th>
+                <th data-i18n="images.resolution">Разрешение</th>
+                <th data-i18n="images.metadata">Метаданные</th>
+                <th data-i18n="images.actions">Действия</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -129,23 +138,22 @@
         </div>
       </div>
 
-
       <div id="documentsPanel" class="hidden-panel">
-        <p class="subtitle small-sub">
+        <p class="subtitle small-sub" data-i18n="documents.subtitle">
           Все найденные документы на сайте. Можно скачивать по одному или включить массовое скачивание перед стартом.
         </p>
         <div class="documents-toolbar">
           <div id="documentsSummary" class="summary"></div>
           <div id="documentsActions" class="documents-actions">
-            <button id="downloadAllDocumentsBtn" type="button" class="secondary">Скачать все</button>
-            <button id="documentsReportBtn" type="button" class="secondary">Отчёт</button>
-            <button id="documentsTableBtn" type="button" class="secondary hidden-panel">К таблице</button>
-            <button id="documentsExportPdfBtn" type="button" class="secondary">Экспорт PDF</button>
-            <button id="documentsExportJsonBtn" type="button" class="secondary">Экспорт JSON</button>
+            <button id="downloadAllDocumentsBtn" type="button" class="secondary" data-i18n="documents.downloadAll">Скачать все</button>
+            <button id="documentsReportBtn" type="button" class="secondary" data-i18n="documents.report">Отчёт</button>
+            <button id="documentsTableBtn" type="button" class="secondary hidden-panel" data-i18n="documents.backToTable">К таблице</button>
+            <button id="documentsExportPdfBtn" type="button" class="secondary" data-i18n="documents.exportPdf">Экспорт PDF</button>
+            <button id="documentsExportJsonBtn" type="button" class="secondary" data-i18n="documents.exportJson">Экспорт JSON</button>
           </div>
         </div>
         <div id="documentFilterChips" class="chip-row">
-          <button class="chip active" data-doc-mode="all">Все</button>
+          <button class="chip active" data-doc-mode="all" data-i18n="filters.all">Все</button>
           <button class="chip" data-doc-mode="pdf">PDF</button>
           <button class="chip" data-doc-mode="doc">DOC/DOCX</button>
           <button class="chip" data-doc-mode="xls">XLS/XLSX</button>
@@ -156,13 +164,13 @@
           <table id="documentsTable" class="documents-table">
             <thead>
               <tr>
-                <th>Имя</th>
-                <th>Тип</th>
-                <th>URL файла</th>
-                <th>Страница</th>
-                <th>Размер</th>
-                <th>Статус / метаданные</th>
-                <th>Действия</th>
+                <th data-i18n="documents.name">Имя</th>
+                <th data-i18n="documents.type">Тип</th>
+                <th data-i18n="documents.fileUrl">URL файла</th>
+                <th data-i18n="documents.page">Страница</th>
+                <th data-i18n="documents.size">Размер</th>
+                <th data-i18n="documents.statusMetadata">Статус / метаданные</th>
+                <th data-i18n="documents.actions">Действия</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -171,25 +179,25 @@
         <div id="documentsReportWrapper" class="hidden-panel"></div>
       </div>
       <div id="whoisPanel" class="hidden-panel">
-        <p class="subtitle small-sub">
+        <p class="subtitle small-sub" data-i18n="whois.subtitle">
           WHOIS-информация о домене, который вы сканируете. Данные загружаются при первом открытии этой вкладки.
         </p>
         <div id="whoisContent">
-          <div id="whoisLoading" class="whois-status hidden">Загружаем WHOIS...</div>
+          <div id="whoisLoading" class="whois-status hidden" data-i18n="whois.loading">Загружаем WHOIS...</div>
           <div id="whoisError" class="whois-status whois-error hidden"></div>
           <div id="whoisSummaryWrapper" class="table-wrapper hidden">
             <table id="whoisSummaryTable" class="links-table whois-table">
               <thead>
                 <tr>
-                  <th>Поле</th>
-                  <th>Значение</th>
+                  <th data-i18n="whois.field">Поле</th>
+                  <th data-i18n="whois.value">Значение</th>
                 </tr>
               </thead>
               <tbody></tbody>
             </table>
           </div>
           <div id="whoisRawWrapper" class="whois-raw hidden">
-            <h3>Полные данные WHOIS</h3>
+            <h3 data-i18n="whois.rawTitle">Полные данные WHOIS</h3>
             <pre id="whoisRaw"></pre>
           </div>
         </div>
@@ -200,7 +208,7 @@
   <div id="imageModal" class="img-modal hidden">
     <div class="img-modal-backdrop"></div>
     <div class="img-modal-content">
-      <button id="imageModalClose" class="img-modal-close" type="button">×</button>
+      <button id="imageModalClose" class="img-modal-close" type="button" aria-label="Close">×</button>
       <img id="imageModalImg" src="" alt=""/>
     </div>
   </div>

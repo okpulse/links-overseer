@@ -2,6 +2,210 @@
   const $ = s => document.querySelector(s);
   const $$ = s => Array.from(document.querySelectorAll(s));
 
+  const I18N = {
+    ru: {
+      "ui.language": "Язык",
+      "app.subtitle": "Проверка ссылок, сбор картинок и документов: введите стартовый адрес и глубину обхода.",
+      "form.startUrl": "Стартовый URL",
+      "form.depth": "Глубина обхода",
+      "form.depthHint": "2 — по умолчанию; 0 — только указанная страница; максимум — 5.",
+      "form.respectRobots": "Учитывать",
+      "form.robotsTitle": "Будут учитываться правила Disallow и crawl-delay.",
+      "form.downloadImages": "Скачивать картинки для анализа метаданных и разрешения",
+      "form.downloadImagesHint": "Если включено — картинки сохраняются в папку сайта и сразу анализируются.",
+      "form.downloadDocuments": "Скачивать документы для анализа метаданных",
+      "form.downloadDocumentsHint": "Если включено — документы сохраняются в папку сайта и сразу анализируются.",
+      "buttons.start": "Старт",
+      "buttons.stop": "Стоп",
+      "buttons.download": "Скачать",
+      "buttons.downloading": "Загрузка...",
+      "buttons.tooLargeImage": "Слишком большой (>10 МБ)",
+      "buttons.tooLargeDocument": "Слишком большой (>300 МБ)",
+      "tabs.links": "Ссылки",
+      "tabs.images": "Картинки",
+      "tabs.documents": "Документы",
+      "filters.all": "Все",
+      "filters.internal": "Внутренние",
+      "filters.external": "Внешние",
+      "filters.errors": "Ошибки",
+      "progress.visited": "Посещено",
+      "progress.queued": "В очереди",
+      "progress.discovered": "Найдено",
+      "progress.errors": "Ошибки",
+      "links.sitePage": "Страница сайта",
+      "links.status": "Статус",
+      "links.timeMs": "Время, мс",
+      "links.internalShort": "Внутр.?",
+      "links.summary": "Итого ссылок: {total} | Внутренних: {internal} | Внешних: {external} | Нерабочих/ошибок: {broken}",
+      "common.yes": "да",
+      "common.no": "нет",
+      "images.subtitle": "Галерея всех найденных картинок на сайте. Клик по превью — увеличить. Для анализа метаданных нажмите «Скачать».",
+      "images.image": "Картинка",
+      "images.imageUrl": "URL картинки",
+      "images.page": "Страница",
+      "images.resolution": "Разрешение",
+      "images.metadata": "Метаданные",
+      "images.actions": "Действия",
+      "images.noMetadata": "метаданные не обнаружены",
+      "images.downloadPrompt": "Нажмите «Скачать» чтобы проверить",
+      "images.downloadError": "Ошибка скачивания картинки",
+      "documents.subtitle": "Все найденные документы на сайте. Можно скачивать по одному или включить массовое скачивание перед стартом.",
+      "documents.downloadAll": "Скачать все",
+      "documents.downloadingAll": "Скачивание...",
+      "documents.noDocumentsToDownload": "Нет документов для скачивания",
+      "documents.report": "Отчёт",
+      "documents.backToTable": "К таблице",
+      "documents.exportPdf": "Экспорт PDF",
+      "documents.exportJson": "Экспорт JSON",
+      "documents.name": "Имя",
+      "documents.type": "Тип",
+      "documents.fileUrl": "URL файла",
+      "documents.page": "Страница",
+      "documents.size": "Размер",
+      "documents.statusMetadata": "Статус / метаданные",
+      "documents.actions": "Действия",
+      "documents.summary": "Найдено документов: {total} | Скачано: {downloaded} | С метаданными: {withMeta}",
+      "documents.downloadPrompt": "Нажмите «Скачать» чтобы проверить",
+      "documents.downloadError": "Ошибка скачивания документа: {error}",
+      "documents.exportNoDownloaded": "Нет скачанных документов для экспорта.",
+      "documents.noActiveJob": "Не найдена активная задача.",
+      "documents.reportTitle": "Отчёт изучения метаданных",
+      "documents.reportEmpty": "Отчёт строится только по уже скачанным документам. Пока данных нет.",
+      "documents.reportDownloaded": "Скачано документов",
+      "documents.reportWithMetadata": "С метаданными",
+      "documents.reportSections": "Разделов метаданных",
+      "documents.reportValues": "Всего найденных значений",
+      "documents.defaultFile": "Документ",
+      "documents.foundOn": " — найдено на: ",
+      "metadata.other": "Другое",
+      "whois.subtitle": "WHOIS-информация о домене, который вы сканируете. Данные загружаются при первом открытии этой вкладки.",
+      "whois.loading": "Загружаем WHOIS...",
+      "whois.field": "Поле",
+      "whois.value": "Значение",
+      "whois.rawTitle": "Полные данные WHOIS",
+      "whois.enterTarget": "Введите URL или домен в поле выше, чтобы получить WHOIS.",
+      "whois.requestFailed": "Не удалось получить WHOIS: {error}",
+      "whois.requestError": "ошибка запроса",
+      "whois.domain": "Домен",
+      "whois.registrar": "Регистратор",
+      "whois.registrant": "Владелец",
+      "whois.created": "Создан",
+      "whois.updated": "Обновлён",
+      "whois.expires": "Истекает",
+      "alerts.invalidUrl": "Введите корректный URL, начиная с http(s)://",
+      "alerts.startError": "Ошибка запуска: {error}",
+      "status.found": "найден",
+      "status.stopped": "остановлен",
+      "status.downloadError": "ошибка скачивания",
+      "status.tooLarge": "слишком большой",
+      "status.downloaded": "скачан",
+      "status.metadataExtracted": "метаданные извлечены",
+      "status.noMetadata": "метаданные не обнаружены"
+    },
+    en: {
+      "ui.language": "Language",
+      "app.subtitle": "Check links, collect images and documents: enter the start URL and crawl depth.",
+      "form.startUrl": "Start URL",
+      "form.depth": "Crawl depth",
+      "form.depthHint": "2 — default; 0 — only the specified page; maximum — 5.",
+      "form.respectRobots": "Respect",
+      "form.robotsTitle": "Disallow rules and crawl-delay will be respected.",
+      "form.downloadImages": "Download images for metadata and resolution analysis",
+      "form.downloadImagesHint": "If enabled, images are saved to the site folder and analyzed immediately.",
+      "form.downloadDocuments": "Download documents for metadata analysis",
+      "form.downloadDocumentsHint": "If enabled, documents are saved to the site folder and analyzed immediately.",
+      "buttons.start": "Start",
+      "buttons.stop": "Stop",
+      "buttons.download": "Download",
+      "buttons.downloading": "Downloading...",
+      "buttons.tooLargeImage": "Too large (>10 MB)",
+      "buttons.tooLargeDocument": "Too large (>300 MB)",
+      "tabs.links": "Links",
+      "tabs.images": "Images",
+      "tabs.documents": "Documents",
+      "filters.all": "All",
+      "filters.internal": "Internal",
+      "filters.external": "External",
+      "filters.errors": "Errors",
+      "progress.visited": "Visited",
+      "progress.queued": "Queued",
+      "progress.discovered": "Discovered",
+      "progress.errors": "Errors",
+      "links.sitePage": "Site page",
+      "links.status": "Status",
+      "links.timeMs": "Time, ms",
+      "links.internalShort": "In?",
+      "links.summary": "Total links: {total} | Internal: {internal} | External: {external} | Broken/errors: {broken}",
+      "common.yes": "yes",
+      "common.no": "no",
+      "images.subtitle": "Gallery of all images found on the site. Click a preview to enlarge. Click “Download” to analyze metadata.",
+      "images.image": "Image",
+      "images.imageUrl": "Image URL",
+      "images.page": "Page",
+      "images.resolution": "Resolution",
+      "images.metadata": "Metadata",
+      "images.actions": "Actions",
+      "images.noMetadata": "metadata not found",
+      "images.downloadPrompt": "Click “Download” to check",
+      "images.downloadError": "Image download error",
+      "documents.subtitle": "All documents found on the site. You can download them individually or enable bulk download before starting.",
+      "documents.downloadAll": "Download all",
+      "documents.downloadingAll": "Downloading...",
+      "documents.noDocumentsToDownload": "No documents to download",
+      "documents.report": "Report",
+      "documents.backToTable": "Back to table",
+      "documents.exportPdf": "Export PDF",
+      "documents.exportJson": "Export JSON",
+      "documents.name": "Name",
+      "documents.type": "Type",
+      "documents.fileUrl": "File URL",
+      "documents.page": "Page",
+      "documents.size": "Size",
+      "documents.statusMetadata": "Status / metadata",
+      "documents.actions": "Actions",
+      "documents.summary": "Documents found: {total} | Downloaded: {downloaded} | With metadata: {withMeta}",
+      "documents.downloadPrompt": "Click “Download” to check",
+      "documents.downloadError": "Document download error: {error}",
+      "documents.exportNoDownloaded": "No downloaded documents to export.",
+      "documents.noActiveJob": "Active job not found.",
+      "documents.reportTitle": "Metadata Analysis Report",
+      "documents.reportEmpty": "The report is built only from downloaded documents. There is no data yet.",
+      "documents.reportDownloaded": "Downloaded documents",
+      "documents.reportWithMetadata": "With metadata",
+      "documents.reportSections": "Metadata sections",
+      "documents.reportValues": "Total found values",
+      "documents.defaultFile": "Document",
+      "documents.foundOn": " — found on: ",
+      "metadata.other": "Other",
+      "whois.subtitle": "WHOIS information for the domain you are scanning. Data is loaded when you open this tab for the first time.",
+      "whois.loading": "Loading WHOIS...",
+      "whois.field": "Field",
+      "whois.value": "Value",
+      "whois.rawTitle": "Full WHOIS data",
+      "whois.enterTarget": "Enter a URL or domain in the field above to get WHOIS.",
+      "whois.requestFailed": "Failed to get WHOIS: {error}",
+      "whois.requestError": "request error",
+      "whois.domain": "Domain",
+      "whois.registrar": "Registrar",
+      "whois.registrant": "Registrant",
+      "whois.created": "Created",
+      "whois.updated": "Updated",
+      "whois.expires": "Expires",
+      "alerts.invalidUrl": "Enter a valid URL starting with http(s)://",
+      "alerts.startError": "Start error: {error}",
+      "status.found": "found",
+      "status.stopped": "stopped",
+      "status.downloadError": "download error",
+      "status.tooLarge": "too large",
+      "status.downloaded": "downloaded",
+      "status.metadataExtracted": "metadata extracted",
+      "status.noMetadata": "metadata not found"
+    }
+  };
+
+  let LANG = localStorage.getItem("linksOverseerLang") || "ru";
+  if (!I18N[LANG]) LANG = "ru";
+
   let JOB_ID = null;
   let ALL_RESULTS = [];
   let ALL_IMAGES = [];
@@ -14,11 +218,84 @@
   let DOCS_BULK_DOWNLOADING = false;
   let DOCS_BULK_ABORT = false;
   let CURRENT_START_URL = '';
+  let LAST_STATUS = {};
 
   let WHOIS_LOADED = false;
   let WHOIS_LOADING = false;
   let WHOIS_DATA = null;
   let WHOIS_TARGET = null;
+
+  function t(key, vars){
+    var dict = I18N[LANG] || I18N.ru;
+    var value = dict[key] || I18N.ru[key] || key;
+    if (vars) {
+      Object.keys(vars).forEach(function(k){
+        value = value.replace(new RegExp('\\{' + k + '\\}', 'g'), vars[k]);
+      });
+    }
+    return value;
+  }
+
+  function applyI18n(){
+    document.documentElement.lang = LANG;
+    $$('[data-i18n]').forEach(function(el){
+      el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    $$('[data-i18n-title]').forEach(function(el){
+      el.title = t(el.getAttribute('data-i18n-title'));
+    });
+    var select = $('#languageSelect');
+    if (select) select.value = LANG;
+    updateProgress(LAST_STATUS || {});
+  }
+
+  function setLanguage(lang){
+    if (!I18N[lang]) return;
+    LANG = lang;
+    localStorage.setItem('linksOverseerLang', lang);
+    applyI18n();
+    renderTable();
+    renderImages();
+    renderDocuments();
+    if (WHOIS_DATA) renderWhois(WHOIS_DATA);
+  }
+
+  function translateStatus(value){
+    var raw = String(value || '').trim();
+    var map = {
+      'найден': 'status.found',
+      'остановлен': 'status.stopped',
+      'ошибка скачивания': 'status.downloadError',
+      'слишком большой': 'status.tooLarge',
+      'скачан': 'status.downloaded',
+      'метаданные извлечены': 'status.metadataExtracted',
+      'метаданные не обнаружены': 'status.noMetadata'
+    };
+    return map[raw] ? t(map[raw]) : raw;
+  }
+
+  function translateBackendMessage(value){
+    var raw = String(value || '').trim();
+    if (!raw) return '';
+    var exact = {
+      'метаданные не обнаружены': t('status.noMetadata'),
+      'EXIF найдено': LANG === 'en' ? 'EXIF found' : 'EXIF найдено',
+      'текстовый файл: служебные метаданные обычно отсутствуют': LANG === 'en' ? 'text file: service metadata is usually absent' : 'текстовый файл: служебные метаданные обычно отсутствуют',
+      'метаданные не обнаружены': t('status.noMetadata'),
+      'PDF скачан; явные метаданные не обнаружены': LANG === 'en' ? 'PDF downloaded; explicit metadata not found' : 'PDF скачан; явные метаданные не обнаружены',
+      'OOXML скачан; явные метаданные не обнаружены': LANG === 'en' ? 'OOXML downloaded; explicit metadata not found' : 'OOXML скачан; явные метаданные не обнаружены',
+      'старый Office-формат скачан; явные метаданные не обнаружены': LANG === 'en' ? 'legacy Office format downloaded; explicit metadata not found' : 'старый Office-формат скачан; явные метаданные не обнаружены',
+      'не удалось разобрать OOXML': LANG === 'en' ? 'failed to parse OOXML' : 'не удалось разобрать OOXML',
+      'старый Office-формат: не удалось разобрать контейнер OLE': LANG === 'en' ? 'legacy Office format: failed to parse OLE container' : 'старый Office-формат: не удалось разобрать контейнер OLE'
+    };
+    if (exact[raw]) return exact[raw];
+    return raw;
+  }
+
+  function metadataKeyLabel(key){
+    if (String(key || '').trim() === 'Другое') return t('metadata.other');
+    return key || '';
+  }
 
   function setActiveTab(tab){
     ACTIVE_TAB = tab;
@@ -46,12 +323,19 @@
     }
   }
 
+  const languageSelect = $('#languageSelect');
+  if (languageSelect) {
+    languageSelect.addEventListener('change', function(){ setLanguage(languageSelect.value); });
+  }
+
   $$("#mainTabs .tab").forEach(btn => {
     btn.addEventListener("click", function(){
       const tab = btn.getAttribute("data-tab");
       setActiveTab(tab);
     });
   });
+
+  applyI18n();
   setActiveTab("links");
 
   $("#startBtn").onclick = async function () {
@@ -64,7 +348,7 @@
     const respect_robots = $("#respectRobots").checked;
     const download_images = ($("#downloadImages") && $("#downloadImages").checked) || false;
     const download_documents = ($("#downloadDocuments") && $("#downloadDocuments").checked) || false;
-    if (!/^https?:\/\//i.test(start_url)) { alert("Введите корректный URL, начиная с http(s)://"); return; }
+    if (!/^https?:\/\//i.test(start_url)) { alert(t('alerts.invalidUrl')); return; }
 
     $("#progress").classList.remove("hidden");
     $("#progress").classList.remove("done");
@@ -78,7 +362,7 @@
       });
       if (!res.ok) {
         const txt = await res.text();
-        alert("Ошибка запуска: " + txt);
+        alert(t('alerts.startError', {error: txt}));
         return;
       }
       const payload = await res.json();
@@ -86,6 +370,7 @@
       ALL_RESULTS = [];
       ALL_IMAGES = [];
       ALL_DOCUMENTS = [];
+      LAST_STATUS = {};
       renderTable();
       renderImages();
       renderDocuments();
@@ -147,17 +432,15 @@
     });
   }
   if (documentsExportJsonBtn) {
-    documentsExportJsonBtn.addEventListener("click", function(){
-      exportDocumentsReportJSON();
-    });
+    documentsExportJsonBtn.addEventListener("click", function(){ exportDocumentsReportJSON(); });
   }
   if (documentsExportPdfBtn) {
-    documentsExportPdfBtn.addEventListener("click", function(){
-      exportDocumentsReportPDF();
-    });
+    documentsExportPdfBtn.addEventListener("click", function(){ exportDocumentsReportPDF(); });
   }
 
   function updateProgress(st){
+    st = st || {};
+    LAST_STATUS = st;
     var pagesPct = 0, linksPct = 0;
     if ((st.discovered||0) > 0) pagesPct = Math.min(100, Math.round((st.visited||0) * 100 / st.discovered));
     if ((st.total_links||0) > 0) linksPct = Math.min(100, Math.round((st.checked_links||0) * 100 / st.total_links));
@@ -171,10 +454,10 @@
     var statQueued = $("#statQueued");
     var statDiscovered = $("#statDiscovered");
     var statErrors = $("#statErrors");
-    if (statVisited) statVisited.textContent = "Visited: " + visited;
-    if (statQueued) statQueued.textContent = "Queued: " + queued;
-    if (statDiscovered) statDiscovered.textContent = "Discovered: " + discovered;
-    if (statErrors) statErrors.textContent = "Errors: " + errors;
+    if (statVisited) statVisited.textContent = t('progress.visited') + ": " + visited;
+    if (statQueued) statQueued.textContent = t('progress.queued') + ": " + queued;
+    if (statDiscovered) statDiscovered.textContent = t('progress.discovered') + ": " + discovered;
+    if (statErrors) statErrors.textContent = t('progress.errors') + ": " + errors;
     const isDone = (st.state || "") === "done"
       || ((st.total_links||0) > 0 && (st.checked_links||0) >= st.total_links
           && (st.discovered||0) > 0 && (st.visited||0) >= st.discovered);
@@ -270,12 +553,7 @@
       if (c==="4" || c==="5" || c==="e") broken++;
     });
     var summary = $("#summary");
-    if (summary) {
-      summary.textContent = "Итого ссылок: " + total
-        + " | Внутренних: " + internal
-        + " | Внешних: " + external
-        + " | Нерабочих/ошибок: " + broken;
-    }
+    if (summary) summary.textContent = t('links.summary', {total:total, internal:internal, external:external, broken:broken});
 
     rows.forEach(function(r){
       var tr = document.createElement("tr");
@@ -294,7 +572,7 @@
         + '<td>' + pageTD + '</td>'
         + '<td>' + st + '</td>'
         + '<td>' + ms + '</td>'
-        + '<td>' + (r.internal ? "yes" : "no") + '</td>';
+        + '<td>' + (r.internal ? t('common.yes') : t('common.no')) + '</td>';
       tbody.appendChild(tr);
     });
   }
@@ -345,9 +623,9 @@
 
       var tdMeta = document.createElement("td");
       if (img.downloaded) {
-        tdMeta.textContent = (img.hasMetadata && img.metadataShort) ? img.metadataShort : "метаданные не обнаружены";
+        tdMeta.textContent = (img.hasMetadata && img.metadataShort) ? translateBackendMessage(img.metadataShort) : t('images.noMetadata');
       } else {
-        tdMeta.textContent = "Нажмите «Скачать» чтобы проверить";
+        tdMeta.textContent = t('images.downloadPrompt');
         tdMeta.classList.add("muted");
       }
       tr.appendChild(tdMeta);
@@ -375,20 +653,20 @@
       btnDownload.type = "button";
       if (img.tooLarge) {
         btnDownload.disabled = true;
-        btnDownload.textContent = "Слишком большой (>10 МБ)";
+        btnDownload.textContent = t('buttons.tooLargeImage');
       } else {
-        btnDownload.textContent = "Скачать";
+        btnDownload.textContent = t('buttons.download');
       }
       btnDownload.onclick = async function () {
         if (!JOB_ID || img.tooLarge) return;
         btnDownload.disabled = true;
-        btnDownload.textContent = "Загрузка...";
+        btnDownload.textContent = t('buttons.downloading');
         try {
           const res = await fetch("/api/images/download?job=" + encodeURIComponent(JOB_ID) + "&id=" + encodeURIComponent(img.id), { method: "POST" });
           if (!res.ok) {
-            alert("Ошибка скачивания картинки");
+            alert(t('images.downloadError'));
             btnDownload.disabled = false;
-            btnDownload.textContent = "Скачать";
+            btnDownload.textContent = t('buttons.download');
             return;
           }
           const updated = await res.json();
@@ -396,9 +674,9 @@
           renderImages();
         } catch (e) {
           console.warn("download error", e);
-          alert("Ошибка скачивания картинки");
+          alert(t('images.downloadError'));
           btnDownload.disabled = false;
-          btnDownload.textContent = "Скачать";
+          btnDownload.textContent = t('buttons.download');
         }
       };
       actions.appendChild(btnDownload);
@@ -407,7 +685,6 @@
       tbody.appendChild(tr);
     });
   }
-
 
   function documentCanBeDownloaded(doc){
     if (!doc || doc.tooLarge) return false;
@@ -440,8 +717,8 @@
     if (downloadBtn) {
       var pending = (ALL_DOCUMENTS || []).filter(documentCanBeDownloaded).length;
       downloadBtn.disabled = DOCS_BULK_DOWNLOADING || pending === 0;
-      downloadBtn.textContent = DOCS_BULK_DOWNLOADING ? "Скачивание..." : "Скачать все";
-      downloadBtn.title = pending === 0 ? "Нет документов для скачивания" : "";
+      downloadBtn.textContent = DOCS_BULK_DOWNLOADING ? t('documents.downloadingAll') : t('documents.downloadAll');
+      downloadBtn.title = pending === 0 ? t('documents.noDocumentsToDownload') : "";
     }
   }
 
@@ -468,9 +745,7 @@
     DOCS_BULK_DOWNLOADING = true;
     DOCS_BULK_ABORT = false;
     try {
-      try {
-        await refreshDocumentsFromServer();
-      } catch (e) {}
+      try { await refreshDocumentsFromServer(); } catch (e) {}
       renderDocuments();
       var ids = (ALL_DOCUMENTS || [])
         .filter(documentCanBeDownloaded)
@@ -493,9 +768,7 @@
           }
         } catch (e) {
           var msg = ((e && e.message) || "").toLowerCase();
-          if (DOCS_BULK_ABORT || /canceled|cancelled|context canceled|остановлен/i.test(msg)) {
-            break;
-          }
+          if (DOCS_BULK_ABORT || /canceled|cancelled|context canceled|остановлен/i.test(msg)) break;
           if (msg.indexOf("document not found") !== -1 || msg.indexOf("bad request") !== -1) {
             try { await refreshDocumentsFromServer(); } catch (e2) {}
           }
@@ -539,7 +812,7 @@
       String(doc.contacts).split(",").map(function(v){ return v.trim(); }).filter(Boolean).forEach(function(v){ add("Contacts", v); });
     }
     var known = {};
-    entries.forEach(function(item){ known[(item.key + " " + item.value).toLowerCase()] = true; });
+    entries.forEach(function(item){ known[(item.key + "\x00" + item.value).toLowerCase()] = true; });
     splitMetadataParts(doc.metadataRawSummary || doc.metadataShort || "").forEach(function(part){
       var idx = part.indexOf(":");
       if (idx <= 0) return;
@@ -554,7 +827,7 @@
         value = key + ': ' + value;
         storeKey = 'Другое';
       }
-      var sig = (storeKey + " " + value).toLowerCase();
+      var sig = (storeKey + "\x00" + value).toLowerCase();
       if (!known[sig]) {
         known[sig] = true;
         add(storeKey, value);
@@ -577,10 +850,11 @@
     var report = buildDocumentsReportData();
     var generatedAt = new Date();
     return {
-      title: 'Отчёт изучения метаданных',
+      title: t('documents.reportTitle'),
       site: CURRENT_START_URL || (($('#startUrl') && $('#startUrl').value) || ''),
       createdAt: generatedAt.toISOString(),
       createdAtDisplay: formatReportDate(generatedAt),
+      language: LANG,
       summary: {
         downloadedDocuments: report.totals.downloaded,
         withMetadata: report.totals.withMetadata,
@@ -589,11 +863,9 @@
       },
       categories: report.sections.map(function(section){
         return {
-          key: section.key,
+          key: metadataKeyLabel(section.key),
           total: section.total,
-          values: section.values.map(function(item){
-            return { value: item.value, count: item.count };
-          })
+          values: section.values.map(function(item){ return { value: item.value, count: item.count }; })
         };
       })
     };
@@ -621,7 +893,7 @@
   function exportDocumentsReportJSON(){
     var data = getDocumentsReportExportData();
     if (!data.summary.downloadedDocuments) {
-      alert('Нет скачанных документов для экспорта.');
+      alert(t('documents.exportNoDownloaded'));
       return;
     }
     var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json;charset=utf-8'});
@@ -631,15 +903,15 @@
   function exportDocumentsReportPDF(){
     var data = getDocumentsReportExportData();
     if (!data.summary.downloadedDocuments) {
-      alert('Нет скачанных документов для экспорта.');
+      alert(t('documents.exportNoDownloaded'));
       return;
     }
     if (!JOB_ID) {
-      alert('Не найдена активная задача.');
+      alert(t('documents.noActiveJob'));
       return;
     }
     var a = document.createElement('a');
-    a.href = '/api/documents/report.pdf?job=' + encodeURIComponent(JOB_ID);
+    a.href = '/api/documents/report.pdf?job=' + encodeURIComponent(JOB_ID) + '&lang=' + encodeURIComponent(LANG);
     a.download = '';
     document.body.appendChild(a);
     a.click();
@@ -664,10 +936,11 @@
         groups[key].values[valKey].docs.push(doc);
       });
     });
-    var sections = Object.keys(groups).sort(function(a,b){ return a.localeCompare(b, 'ru'); }).map(function(key){
+    var locale = LANG === 'en' ? 'en' : 'ru';
+    var sections = Object.keys(groups).sort(function(a,b){ return metadataKeyLabel(a).localeCompare(metadataKeyLabel(b), locale); }).map(function(key){
       var values = Object.values(groups[key].values).sort(function(a,b){
         if (b.count !== a.count) return b.count - a.count;
-        return a.value.localeCompare(b.value, 'ru');
+        return a.value.localeCompare(b.value, locale);
       });
       return { key:key, total:groups[key].total, values:values };
     });
@@ -682,15 +955,18 @@
     var summary = document.createElement("div");
     summary.className = "docs-report-summary";
     if (!report.totals.downloaded) {
-      summary.innerHTML = '<div class="docs-report-empty">Отчёт строится только по уже скачанным документам. Пока данных нет.</div>';
+      var empty = document.createElement('div');
+      empty.className = 'docs-report-empty';
+      empty.textContent = t('documents.reportEmpty');
+      summary.appendChild(empty);
       wrap.appendChild(summary);
       return;
     }
     var cards = [
-      ["Скачано документов", report.totals.downloaded],
-      ["С метаданными", report.totals.withMetadata],
-      ["Разделов метаданных", report.sections.length],
-      ["Всего найденных значений", report.totals.values],
+      [t('documents.reportDownloaded'), report.totals.downloaded],
+      [t('documents.reportWithMetadata'), report.totals.withMetadata],
+      [t('documents.reportSections'), report.sections.length],
+      [t('documents.reportValues'), report.totals.values],
     ];
     cards.forEach(function(card){
       var el = document.createElement("div");
@@ -703,7 +979,7 @@
       var block = document.createElement("section");
       block.className = "docs-report-section";
       var h = document.createElement("h3");
-      h.textContent = section.key + ' (' + section.total + ')';
+      h.textContent = metadataKeyLabel(section.key) + ' (' + section.total + ')';
       block.appendChild(h);
       section.values.forEach(function(item){
         var details = document.createElement("details");
@@ -719,12 +995,12 @@
           fileLink.href = doc.fileUrl || "#";
           fileLink.target = "_blank";
           fileLink.rel = "noopener noreferrer";
-          fileLink.textContent = (doc.fileName || doc.fileUrl || "Документ") + ' [' + (doc.fileType || '').toUpperCase() + ']';
+          fileLink.textContent = (doc.fileName || doc.fileUrl || t('documents.defaultFile')) + ' [' + (doc.fileType || '').toUpperCase() + ']';
           li.appendChild(fileLink);
           if (doc.pageUrl) {
             var span = document.createElement("span");
             span.className = "docs-report-page";
-            span.textContent = ' — найдено на: ';
+            span.textContent = t('documents.foundOn');
             li.appendChild(span);
             var pageLink = document.createElement("a");
             pageLink.href = doc.pageUrl;
@@ -741,6 +1017,7 @@
       wrap.appendChild(block);
     });
   }
+
   function documentMatchesFilter(doc){
     if (DOC_MODE === "all") return true;
     return (doc.typeGroup || "") === DOC_MODE;
@@ -760,7 +1037,7 @@
     if (summary) {
       var downloaded = docs.filter(d => d.downloaded).length;
       var withMeta = docs.filter(d => d.hasMetadata).length;
-      summary.textContent = "Найдено документов: " + docs.length + " | Скачано: " + downloaded + " | С метаданными: " + withMeta;
+      summary.textContent = t('documents.summary', {total:docs.length, downloaded:downloaded, withMeta:withMeta});
     }
     updateDocumentsActionState();
     if (DOCUMENTS_VIEW === "report") {
@@ -811,10 +1088,10 @@
 
       var tdMeta = document.createElement("td");
       var lines = [];
-      if (doc.status) lines.push(doc.status);
-      if (doc.metadataShort) lines.push(doc.metadataShort);
+      if (doc.status) lines.push(translateStatus(doc.status));
+      if (doc.metadataShort) lines.push(translateBackendMessage(doc.metadataShort));
       if (doc.downloadError) lines.push(doc.downloadError);
-      tdMeta.textContent = lines.join(" | ") || "Нажмите «Скачать» чтобы проверить";
+      tdMeta.textContent = lines.join(" | ") || t('documents.downloadPrompt');
       if (!doc.downloaded && !doc.downloadError) tdMeta.classList.add("muted");
       tr.appendChild(tdMeta);
 
@@ -823,26 +1100,26 @@
       btn.type = "button";
       if (doc.tooLarge) {
         btn.disabled = true;
-        btn.textContent = "Слишком большой (>25 МБ)";
+        btn.textContent = t('buttons.tooLargeDocument');
       } else if (DOCS_BULK_DOWNLOADING) {
         btn.disabled = true;
-        btn.textContent = "Скачать";
+        btn.textContent = t('buttons.download');
       } else {
-        btn.textContent = "Скачать";
+        btn.textContent = t('buttons.download');
       }
       btn.onclick = async function(){
         if (!JOB_ID || doc.tooLarge || DOCS_BULK_DOWNLOADING) return;
         btn.disabled = true;
-        btn.textContent = "Загрузка...";
+        btn.textContent = t('buttons.downloading');
         try {
           const updated = await downloadSingleDocument(doc.id);
           ALL_DOCUMENTS = (ALL_DOCUMENTS || []).map(function(it){ return it.id === updated.id ? updated : it; });
           renderDocuments();
         } catch(e) {
           console.warn("document download error", e);
-          alert("Ошибка скачивания документа: " + (((e && e.message) || "")));
+          alert(t('documents.downloadError', {error: (((e && e.message) || ""))}));
           btn.disabled = false;
-          btn.textContent = "Скачать";
+          btn.textContent = t('buttons.download');
         }
       };
       tdAct.appendChild(btn);
@@ -891,7 +1168,7 @@
       if (summaryWrapper) summaryWrapper.classList.add("hidden");
       if (rawWrapper) rawWrapper.classList.add("hidden");
       if (errorEl) {
-        errorEl.textContent = "Введите URL или домен в поле выше, чтобы получить WHOIS.";
+        errorEl.textContent = t('whois.enterTarget');
         errorEl.classList.remove("hidden");
       }
       WHOIS_LOADED = false;
@@ -941,8 +1218,8 @@
       WHOIS_DATA = null;
       WHOIS_TARGET = null;
       if (errorEl) {
-        const msg = (e && e.message) ? e.message : "ошибка запроса";
-        errorEl.textContent = "Не удалось получить WHOIS: " + msg;
+        const msg = (e && e.message) ? e.message : t('whois.requestError');
+        errorEl.textContent = t('whois.requestFailed', {error: msg});
         errorEl.classList.remove("hidden");
       }
     } finally {
@@ -972,12 +1249,12 @@
       tbody.appendChild(tr);
     }
 
-    addRow("Домен", data && data.domain || "");
-    addRow("Регистратор", data && data.registrar || "");
-    addRow("Владелец", data && data.registrant || "");
-    addRow("Создан", data && data.creation_date || "");
-    addRow("Обновлён", data && data.updated_date || "");
-    addRow("Истекает", data && data.expiration_date || "");
+    addRow(t('whois.domain'), data && data.domain || "");
+    addRow(t('whois.registrar'), data && data.registrar || "");
+    addRow(t('whois.registrant'), data && data.registrant || "");
+    addRow(t('whois.created'), data && data.creation_date || "");
+    addRow(t('whois.updated'), data && data.updated_date || "");
+    addRow(t('whois.expires'), data && data.expiration_date || "");
     if (data && Array.isArray(data.name_servers) && data.name_servers.length) addRow("Name servers", data.name_servers);
     if (data && Array.isArray(data.emails) && data.emails.length) addRow("E-mail", data.emails);
 
